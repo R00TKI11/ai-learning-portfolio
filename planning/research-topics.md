@@ -15,5 +15,3 @@
 - Idea: Define a suite of “legacy code maintenance” tasks and measure quality/time with different tools.
 - Metrics: Test pass rate, human edit distance, subjective maintainability.
 
-(Add more as you think of them.)
-
