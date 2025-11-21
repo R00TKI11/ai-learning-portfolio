@@ -1,20 +1,19 @@
-# Weekly Review – Week {{NUMBER}}
+# Weekly Review – Week {{NUMBER}} (Start: {{DATE}})
 
-## 🌟 Highlights (What went well)
-- …
+## 🌟 Highlights – What Went Well
+- 
 
-## 📝 Completed Tasks
-- …
+## ✅ Completed This Week
+- 
 
-## 📉 What could be improved
-- …
+## 📉 What Could Be Improved
+- 
 
-## 🚨 Risks or Warning Signs
-- …
+## 🚧 Blockers / Risks
+- 
 
 ## 🎯 Goals for Next Week
-- [ ] …
+- [ ]
 
-## 🧭 Adjustments to Overall Plan
-- …
-
+## 🧭 Adjustments to Long-Term Plan
+- 
