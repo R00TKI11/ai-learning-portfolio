@@ -1,0 +1,6 @@
+2025-02-17T17:44:10Z WARNING IDS - Possible brute force detected from IP=203.7.140.22
+FailedAttempts=112 Window=5m Service=SSH
+
+2025-02-17T17:45:01Z CRITICAL IDS - Suspicious API key usage
+API_KEY=***redacted*** OriginIP=88.14.19.7 ACTION="CreateAdminUser"
+User=system-service expected role=user-level only

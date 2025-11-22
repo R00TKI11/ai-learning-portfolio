@@ -1,0 +1,6 @@
+Exception in thread "main" java.lang.RuntimeException: Failed to load configuration
+    at com.company.Main.initialize(Main.java:54)
+    at com.company.Main.main(Main.java:25)
+Caused by: java.io.FileNotFoundException: /etc/company/config.yaml (Permission denied)
+    at java.base/java.io.FileInputStream.open0(Native Method)
+    at java.base/java.io.FileInputStream.open(FileInputStream.java:216)

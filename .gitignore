@@ -1,4 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Env
 .env
 *.env
-.pyc
-*.pyc
+
+# OS noise
+.DS_Store

@@ -1,0 +1,7 @@
+[2025-02-17 14:23:11] INFO  RequestID=ab12ef User=jsmith GET /api/v1/users/42
+[2025-02-17 14:23:11] ERROR RequestID=ab12ef Route=/api/v1/users/42
+java.lang.NullPointerException: Cannot read field "email" because "user" is null
+    at com.company.api.UserController.getUser(UserController.java:87)
+    at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+Caused by missing user record in database (id=42)

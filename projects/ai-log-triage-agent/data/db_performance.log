@@ -1,0 +1,6 @@
+2025-02-17 15:10:33.118 WARN  SlowQueryMonitor - Query exceeded threshold (1500ms)
+SQL="SELECT * FROM orders WHERE status='PENDING' ORDER BY created_at DESC LIMIT 500"
+ExecutionTime=1874ms Host=db-cluster-2 ReplicationLag=233ms
+
+2025-02-17 15:11:02.223 ERROR ConnectionPool - Failed to acquire DB connection within 5s
+ActiveConnections=47 IdleConnections=0 MaxPoolSize=50

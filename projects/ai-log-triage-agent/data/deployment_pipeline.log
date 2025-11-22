@@ -1,0 +1,10 @@
+[Pipeline] Start
+[Git] Fetching latest commit from origin/main
+[Build] Running Maven package...
+[Build] Tests: 142 passed, 3 failed
+    - UserServiceTest.testEmailValidation FAILED
+    - AuthControllerTest.loginRateLimit FAILED
+    - ReportGeneratorTest.buildMonthlyReport FAILED
+[Deploy] Uploading artifact to S3 bucket: s3://prod-app-artifacts/v2025.02.17/
+[Deploy] ERROR - AccessDeniedException: Insufficient IAM permissions
+Deployment aborted at step "UploadArtifacts"

@@ -1,0 +1,6 @@
+2025-02-17T13:05:22Z WARN  AuthService - Failed login attempt
+IP=192.168.4.17 USERNAME=john.doe MESSAGE="Invalid password"
+2025-02-17T13:06:10Z WARN  AuthService - Failed login attempt
+IP=10.1.55.201 USERNAME=john.doe MESSAGE="Account locked after 5 attempts"
+2025-02-17T13:08:44Z ERROR AuthService - OAuth token validation failed
+TOKEN_ID=8fa22ccd-9910-4e2a MESSAGE="Expired token"
