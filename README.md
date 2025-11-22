@@ -30,7 +30,7 @@ The goal is to build a **public portfolio** that is useful to:
 
 ## Current Project Themes
 
-### 🤖 AI Log Triage Agent (`projects/ai-log-triage-agent`)
+### 🤖 AI Log Triage Agent (`projects/ai-log-triage-agent`) In-Progress
 
 LLM-powered assistant that:
 
@@ -46,7 +46,7 @@ Exposed via both:
 
 ---
 
-### 📚 RAG “Docs-to-Copilot” Starter (`projects/rag-docs-starter`)
+### 📚 RAG “Docs-to-Copilot” Starter (`projects/rag-docs-starter`) Planned
 
 A minimal framework for turning a folder of documents into a simple AI copilot:
 
@@ -57,7 +57,7 @@ A minimal framework for turning a folder of documents into a simple AI copilot:
 
 ---
 
-### 🔧 Predictive Maintenance / Ticket ML (`projects/predictive-maintenance-ml`)
+### 🔧 Predictive Maintenance / Ticket ML (`projects/predictive-maintenance-ml`) Planned
 
 Exploring lightweight ML models on maintenance/logistics-style data:
 
@@ -67,7 +67,7 @@ Exploring lightweight ML models on maintenance/logistics-style data:
 
 ---
 
-### 🧪 Coding Assistant Benchmark (`projects/coding-assistant-benchmark`)
+### 🧪 Coding Assistant Benchmark (`projects/coding-assistant-benchmark`) Planned
 
 Task-based benchmark for evaluating AI coding tools (ChatGPT, Claude, Copilot, etc.) on realistic maintenance and refactoring tasks.
 
