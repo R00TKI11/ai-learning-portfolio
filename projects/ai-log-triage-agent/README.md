@@ -18,6 +18,7 @@ The goal is to build both:
 
 This project will also serve as a foundation for potential **research work** on LLM-based triage and developer productivity.
 
+```mermaid
 graph LR
   %% ===== Layers =====
   subgraph UserLayer["User Interfaces"]
@@ -49,6 +50,7 @@ graph LR
 
   TA -->|"TriageResult list<br/>+ summary report"| REP
   TA -->|"serialize to JSON<br/>or API response"| JSONR
+```
 
 ---
 
@@ -114,6 +116,7 @@ graph LR
 
   TA -->|"TriageResult list<br/>+ summary report"| REP
   TA -->|"serialize to JSON<br/>or API response"| JSONR
+```
 
 ---
 
