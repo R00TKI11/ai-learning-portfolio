@@ -1,6 +1,9 @@
 """
 Triage Agent Module
 Uses LLM to analyze log events and provide intelligent triage insights.
+
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
 """
 
 import json

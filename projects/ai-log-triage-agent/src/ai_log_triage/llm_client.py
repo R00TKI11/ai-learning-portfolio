@@ -1,3 +1,11 @@
+"""
+LLM Client Module
+Handles communication with the OpenRouter API.
+
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
+"""
+
 import requests
 from .config import settings
 

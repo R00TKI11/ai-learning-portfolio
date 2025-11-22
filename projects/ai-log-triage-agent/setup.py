@@ -1,5 +1,8 @@
 """
 Setup configuration for AI Log Triage Agent
+
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
 """
 
 from setuptools import setup, find_packages
@@ -12,11 +15,11 @@ long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists
 setup(
     name="ai-log-triage",
     version="0.1.0",
-    author="Carlo",
+    author="R00TKI11",
     description="An intelligent log analysis tool using LLMs for automated triage",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/ai-learning-portfolio",
+    url="https://github.com/R00TKI11/ai-learning-portfolio",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     python_requires=">=3.8",
@@ -46,7 +49,7 @@ setup(
     ],
     keywords="log analysis triage llm ai devops monitoring",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/ai-learning-portfolio/issues",
-        "Source": "https://github.com/yourusername/ai-learning-portfolio",
+        "Bug Reports": "https://github.com/R00TKI11/ai-learning-portfolio/issues",
+        "Source": "https://github.com/R00TKI11/ai-learning-portfolio",
     },
 )

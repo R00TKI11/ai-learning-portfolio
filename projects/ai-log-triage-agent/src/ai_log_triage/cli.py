@@ -3,6 +3,9 @@
 AI Log Triage Agent - CLI Interface
 
 This module provides the command-line interface for the AI Log Triage Agent.
+
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
 """
 
 import argparse

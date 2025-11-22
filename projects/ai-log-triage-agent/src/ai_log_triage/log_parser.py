@@ -1,6 +1,9 @@
 """
 Log Parser Module
 Loads raw log files, chunks them into events, and prepares them for LLM processing.
+
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
 """
 
 import re

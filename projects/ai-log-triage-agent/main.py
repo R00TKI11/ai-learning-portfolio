@@ -5,6 +5,9 @@ AI Log Triage Agent - Convenience Wrapper
 This is a convenience wrapper for running the CLI from the project root.
 For installed package usage, use 'ai-log-triage' command or 'python -m ai_log_triage'.
 
+SPDX-License-Identifier: MIT
+Copyright (c) 2025 R00TKI11
+
 Usage:
     python main.py --input data/webserver_error.log
     python main.py --all --dry-run
