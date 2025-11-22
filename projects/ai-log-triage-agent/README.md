@@ -18,40 +18,6 @@ The goal is to build both:
 
 This project will also serve as a foundation for potential **research work** on LLM-based triage and developer productivity.
 
-```mermaid
-graph LR
-  %% ===== Layers =====
-  subgraph UserLayer["User Interfaces"]
-    UCLI["CLI<br/>(main.py, cli.py)"]
-    UAPI["FastAPI HTTP API<br/>(api.py, planned)"]
-  end
-
-  subgraph Core["Core Triage Engine<br/>(src/ai_log_triage)"]
-    LP["LogParser<br/>(log_parser.py)"]
-    TA["TriageAgent<br/>(triage_agent.py)"]
-    LC["LLM Client<br/>(llm_client.py)"]
-    CFG["Config & Env<br/>(config.py, .env)"]
-  end
-
-  subgraph Data["Logs & Outputs"]
-    RAW["Raw log files<br/>(data/*.log)"]
-    REP["Human-readable reports<br/>(stdout, text files)"]
-    JSONR["Structured results<br/>(triage_results.json / API)"]
-  end
-
-  EXT["External LLM Provider<br/>(OpenRouter / DeepSeek / others)"]
-
-  %% ===== Flows =====
-  UCLI -->|"parse args,<br/>invoke core engine"| LP
-  UAPI -->|"HTTP request<br/>(JSON payload)"| TA
-
-  RAW -->|"read & chunk"| LP -->|"LogEvent objects"| TA -->|"LLM calls"| LC
-  CFG -->|"load keys,<br/>endpoint, model"| LC -->|"HTTP requests"| EXT -->|"LLM responses"| LC
-
-  TA -->|"TriageResult list<br/>+ summary report"| REP
-  TA -->|"serialize to JSON<br/>or API response"| JSONR
-```
-
 ---
 
 ## Features
