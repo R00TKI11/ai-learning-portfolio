@@ -38,50 +38,76 @@ This project will also serve as a foundation for potential **research work** on 
 
 ## Architecture Overview
 
-At a high level, the **AI Log Triage Agent** is built as a small, composable Python package with a thin interface layer on top:
+The AI Log Triage Agent follows a modular, production-ready architecture designed for flexibility, extensibility, and ease of experimentation with different LLMs and parsing strategies.
 
-- A **CLI entrypoint** (`main.py`, future `ai_log_triage.cli`) for local usage and demos
-- A planned **FastAPI HTTP API** (`ai_log_triage.api`) for programmatic integration
-- A **core triage engine** (`ai_log_triage` package) that:
-  - Parses raw log files into structured `LogEvent` objects
-  - Sends those events to an LLM for analysis
-  - Normalizes the LLM response into `TriageResult` objects
-  - Produces both human-readable reports and machine-readable JSON
+### High-Level Flow
+1. **Log Ingestion**
+   - Logs can be provided through the CLI or FastAPI endpoint (`/triage`).
+   - Users can submit a single file, a directory, or raw log text.
+
+2. **Log Parsing**
+   - The `LogParser` module normalizes logs, extracts key fields (timestamps, severity, message), and prepares structured records.
+   - Designed for future expansion (JSON logs, multi-line stack traces, embedded metadata).
+
+3. **Triage Agent**
+   - Orchestrates the analysis workflow.
+   - Generates prompts, passes data to the LLM, and applies classification rules (severity, type, suggested owner team).
+   - Returns structured JSON.
+
+4. **LLM Client Abstraction**
+   - Supports OpenRouter free-tier models (DeepSeek, Grok, etc.).
+   - Future-proof abstraction allows plugging in OpenAI, Anthropic, or local models without changing business logic.
+
+5. **Output Layer**
+   - **CLI mode** prints readable summaries or JSON.
+   - **API mode** returns structured responses for integration with dashboards, monitoring systems, or external services.
 
 ### High-Level Diagram
 
 ```mermaid
-graph LR
-  %% ===== Layers =====
-  subgraph UserLayer["User Interfaces"]
-    UCLI["CLI<br/>(main.py, cli.py)"]
-    UAPI["FastAPI HTTP API<br/>(api.py, planned)"]
-  end
+flowchart TD
 
-  subgraph Core["Core Triage Engine<br/>(src/ai_log_triage)"]
-    LP["LogParser<br/>(log_parser.py)"]
-    TA["TriageAgent<br/>(triage_agent.py)"]
-    LC["LLM Client<br/>(llm_client.py)"]
-    CFG["Config & Env<br/>(config.py, .env)"]
-  end
+    subgraph CLI_App["CLI Application"]
+        CLI_Input["User Input (directory or file)"]
+        CLI_Output["CLI Output (JSON / Summary)"]
+    end
 
-  subgraph Data["Logs & Outputs"]
-    RAW["Raw log files<br/>(data/*.log)"]
-    REP["Human-readable reports<br/>(stdout, text files)"]
-    JSONR["Structured results<br/>(triage_results.json / API)"]
-  end
+    subgraph API_App["FastAPI Application"]
+        API_Request["POST /triage"]
+        API_Response["JSON Response"]
+    end
 
-  EXT["External LLM Provider<br/>(OpenRouter / DeepSeek / others)"]
+    subgraph Parser["Log Parser Module"]
+        Normalize["Normalize & Preprocess Logs"]
+        Structure["Extract Fields & Format"]
+    end
 
-  %% ===== Flows =====
-  UCLI -->|"parse args,<br/>invoke core engine"| LP
-  UAPI -->|"HTTP request<br/>(JSON payload)"| TA
+    subgraph Agent["Triage Agent"]
+        Analyze["LLM Analysis & Reasoning"]
+        Classify["Issue Classification / Severity"]
+        Summaries["Root Cause Summary"]
+    end
 
-  RAW -->|"read & chunk"| LP -->|"LogEvent objects"| TA -->|"LLM calls"| LC
-  CFG -->|"load keys,<br/>endpoint, model"| LC -->|"HTTP requests"| EXT -->|"LLM responses"| LC
+    subgraph LLM["LLM Client"]
+        API_Call["OpenRouter / DeepSeek / Grok API"]
+        Provider["Provider Abstraction Layer"]
+    end
 
-  TA -->|"TriageResult list<br/>+ summary report"| REP
-  TA -->|"serialize to JSON<br/>or API response"| JSONR
+    DataSources["Raw Logs (.log files)"]
+
+    %% Connections
+    CLI_Input --> Parser
+    API_Request --> Parser
+
+    Parser --> Agent
+
+    Agent --> LLM
+    LLM --> Agent
+
+    Agent --> CLI_Output
+    Agent --> API_Response
+
+    DataSources --> Parser
 ```
 
 ---
