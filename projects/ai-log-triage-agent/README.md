@@ -89,7 +89,7 @@ graph LR
 ## Project Status
 
 - [x] v0 — Basic CLI that summarizes a single log file via an LLM
-- [ ] v0.1 — Basic FastAPI endpoint wrapping the same logic
+- [x] v0.1 — Basic FastAPI endpoint wrapping the same logic
 - [ ] v1.0 — Clustering + prioritization + simple heuristics
 - [ ] v1.1 — Initial experiment design + metrics
 - [ ] v2.0 — Writeup suitable as a short paper / technical report
@@ -145,6 +145,77 @@ LLM_DEFAULT_MODEL=your-default-model-here
 ---
 
 ## Usage
+
+### FastAPI Server
+
+Start the REST API server:
+
+```bash
+# Development mode (auto-reload enabled)
+python run_api.py
+
+# Production mode
+python run_api.py --production --workers 4
+
+# Custom host and port
+python run_api.py --host 0.0.0.0 --port 5000
+```
+
+Once running, access:
+- **Swagger UI (interactive docs)**: http://localhost:8000/docs
+- **ReDoc (alternative docs)**: http://localhost:8000/redoc
+- **Health check**: http://localhost:8000/health
+
+#### API Endpoints
+
+**Single Log Triage** - `POST /triage`
+```bash
+curl -X POST http://localhost:8000/triage \
+  -H "Content-Type: application/json" \
+  -d '{
+    "log_text": "2025-02-17 14:23:11 ERROR: Database connection timeout",
+    "source_file": "webserver.log"
+  }'
+```
+
+**Batch Log Triage** - `POST /triage/batch`
+```bash
+curl -X POST http://localhost:8000/triage/batch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "logs": [
+      "2025-02-17 14:23:11 ERROR: Database timeout",
+      "2025-02-17 14:24:15 WARN: High memory usage"
+    ],
+    "source_file": "app.log"
+  }'
+```
+
+**Response Example:**
+```json
+{
+  "source_file": "webserver.log",
+  "line_number": 1,
+  "timestamp": "2025-02-17 14:23:11",
+  "log_level": "ERROR",
+  "summary": "Database connection timeout occurred",
+  "classification": "Database Error",
+  "priority": "HIGH",
+  "suggested_owner": "Database Team",
+  "root_cause": "Connection pool exhausted",
+  "action_items": [
+    "Review connection pool configuration",
+    "Check for connection leaks"
+  ],
+  "original_log": "2025-02-17 14:23:11 ERROR: Database connection timeout"
+}
+```
+
+See [API_EXAMPLES.md](API_EXAMPLES.md) for more detailed examples and integration patterns.
+
+---
+
+### CLI Usage
 
 The CLI can be run in multiple ways depending on your installation method:
 
