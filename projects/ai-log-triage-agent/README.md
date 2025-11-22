@@ -468,10 +468,130 @@ If you encounter HTTP errors from the API:
 
 ## Next Steps
 
-- [ ] v0.1 — Basic FastAPI endpoint wrapping the same logic
-- [ ] v1.0 — Clustering + prioritization + simple heuristics
-- [ ] v1.1 — Initial experiment design + metrics
-- [ ] v2.0 — Writeup suitable as a short paper / technical report
+## 🔭 Roadmap
+
+This roadmap is intentionally high-level so it stays valid as the project evolves. Versions are approximate and represent milestone “themes” rather than strict releases.
+
+### ✅ Current Status – v0.1.x
+
+- CLI tool for running log triage on local log files
+- FastAPI service exposing core triage functionality via HTTP
+- LLM integration via configurable provider (e.g., OpenRouter + free models)
+- Basic test suite (CLI, API, core parsing / triage logic)
+- Sample synthetic logs for common scenarios (auth, DB, web server, deployments, security)
+
+---
+
+### 🧱 v0.2 – Stability, UX, and Core Polish
+
+**Goal:** Make the tool feel reliable and pleasant to use for developers.
+
+- [ ] Harden error handling and edge cases (bad/missing logs, model timeouts, malformed responses)
+- [ ] Improve logging & observability for the triage pipeline (structured logs, correlation IDs, timing)
+- [ ] Refine configuration:
+  - [ ] Centralize settings (env + config file) with clear precedence
+  - [X] Provide a `.env.example` and config docs
+- [ ] Enhance CLI UX:
+  - [ ] Support globs and directories for input logs
+  - [ ] Add options for output format (plain text, JSON, markdown)
+  - [ ] Add filters (by severity, component, time range)
+- [ ] Improve API ergonomics:
+  - [ ] Strong request/response models (pydantic schemas)
+  - [ ] Proper status codes & error payloads
+  - [ ] CORS configuration for future UI
+
+---
+
+### 🧠 v0.3 – Smarter Log Understanding & Triage Quality
+
+**Goal:** Increase the “intelligence” and usefulness of the triage output.
+
+- [ ] Expand built-in log parsers (web, DB, auth, security, infra, app exceptions)
+- [ ] Add a reusable library of patterns (regex/signatures) for common error types
+- [ ] Introduce a consistent severity scoring model (e.g., INFO → CRITICAL)
+- [ ] Add “probable root cause” and “recommended next action” fields
+- [ ] Allow mapping from log patterns → suggested owning team / service
+- [ ] Support multi-log correlation for a single incident (e.g., auth + app + DB sequence)
+
+---
+
+### 🗃️ v0.4 – Persistence & Integrations
+
+**Goal:** Move from “single run” tool to something that can support ongoing operations.
+
+- [ ] Add optional persistence layer:
+  - [ ] Start with SQLite, then allow Postgres
+  - [ ] Store triage runs, summaries, and metadata
+- [ ] Support log ingestion sources:
+  - [ ] Local directory watcher
+  - [ ] Compressed archives (e.g., `.zip`, `.tar.gz`)
+  - [ ] (Stretch) Simple S3 / object storage integration
+- [ ] Basic integrations (MVP):
+  - [ ] Export triage results to JSON for GitHub Actions / CI pipelines
+  - [ ] (Stretch) Simple GitHub or Jira issue export (e.g., create tickets from high-severity findings)
+
+---
+
+### 🧩 v0.5 – Model Abstraction & Multi-Provider Support
+
+**Goal:** Treat models as pluggable infrastructure, not hard-coded dependencies.
+
+- [ ] Create a clean LLM abstraction layer (interface/protocol)
+- [ ] Support multiple providers via configuration:
+  - [ ] OpenRouter / other aggregators
+  - [ ] OpenAI / Anthropic (paid, opt-in)
+  - [ ] Local models (e.g., Ollama / other HTTP-compatible local backends)
+- [ ] Configurable model “profiles”:
+  - [ ] “Cheap & fast” (small models)
+  - [ ] “Standard” (balanced)
+  - [ ] “High-accuracy” (larger models)
+- [ ] Add basic cost / token-usage logging (per call, per run)
+
+---
+
+### 📊 v0.6 – Evaluation, Benchmarks & Research Track
+
+**Goal:** Turn the project into something you can write about (blog posts, talks, and eventually a paper).
+
+- [ ] Define a small benchmark dataset of logs + “ideal” triage outputs
+- [ ] Build an offline evaluation harness:
+  - [ ] Compare different prompts, models, and configurations
+  - [ ] Track metrics like accuracy of severity, correctness of root-cause categorization, clustering quality
+- [ ] Add automated regression tests for model behavior (where feasible)
+- [ ] Document experimental setups in a reproducible way (configs + seeds + model versions)
+- [ ] Draft a short “Technical Report” or blog-style writeup summarizing findings
+
+---
+
+### 📊 v0.7 – Developer Dashboard & Basic UI
+
+**Goal:** Make it easy for non-CLI users (SREs, leads, managers) to consume triage results.
+
+- [ ] Build a minimal web UI on top of FastAPI:
+  - [ ] Upload or select logs and run triage from the browser
+  - [ ] Visualize grouped incidents, severities, and timelines
+- [ ] Add run history view (filterable by date / severity / component)
+- [ ] Provide copy-pasteable summaries for incident reports or tickets
+- [ ] (Stretch) Simple authentication / API key support for shared environments
+
+---
+
+### 🚀 Stretch Ideas & Future Directions
+
+These are longer-term, “nice to have” directions:
+
+- [ ] RAG over historical logs & runbooks (LLM answers with citations)
+- [ ] Multi-tenant deployment mode (teams, organizations)
+- [ ] Docker + docker-compose and/or Helm chart for easy deployment
+- [ ] GitHub Actions CI:
+  - [ ] Run tests on push/PR
+  - [ ] Linting + type-checking
+- [ ] Performance profiling and optimization for high-volume log streams
+- [ ] More formal incident timeline reconstruction and export (for postmortems)
+
+---
+
+This roadmap is intentionally ambitious and not meant to be tackled strictly linear.  
 
 ---
 
