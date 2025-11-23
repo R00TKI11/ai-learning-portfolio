@@ -69,7 +69,7 @@ curl -X POST http://localhost:8000/triage \
     "source_file": "webserver.log",
     "chunk_method": "event",
     "max_tokens": 2048,
-    "model": "gpt-4"
+    "model": "your-preferred-model"
   }'
 ```
 

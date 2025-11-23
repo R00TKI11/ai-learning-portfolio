@@ -250,10 +250,12 @@ CMD ["python", "run_api.py", "--production", "--host", "0.0.0.0"]
 
 Required in `.env`:
 ```env
-LLM_OPENROUTER_API_KEY=your-key
+LLM_OPENROUTER_API_KEY=your-api-key
 LLM_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
-LLM_DEFAULT_MODEL=deepseek/deepseek-r1:free
+LLM_DEFAULT_MODEL=your-preferred-model
 ```
+
+See `.env.example` for configuration details.
 
 ---
 

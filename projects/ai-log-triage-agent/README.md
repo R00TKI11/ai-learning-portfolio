@@ -23,7 +23,7 @@ This project will also serve as a foundation for potential **research work** on 
 ## Features
 
 - **Intelligent Log Parsing**: Automatically detects and groups multi-line log events (e.g., stack traces)
-- **LLM-Powered Analysis**: Uses OpenRouter API to analyze logs with various free models
+- **LLM-Powered Analysis**: Uses any compatible LLM API endpoint for log analysis
 - **Comprehensive Triage**: Provides:
   - Summary of each log event
   - Classification (Database Error, Auth Failure, etc.)
@@ -55,8 +55,8 @@ The AI Log Triage Agent follows a modular, production-ready architecture designe
    - Returns structured JSON.
 
 4. **LLM Client Abstraction**
-   - Supports OpenRouter free-tier models (DeepSeek, Grok, etc.).
-   - Future-proof abstraction allows plugging in OpenAI, Anthropic, or local models without changing business logic.
+   - Supports any OpenRouter-compatible API endpoint.
+   - Future-proof abstraction allows plugging in different LLM providers or local models without changing business logic.
 
 5. **Output Layer**
    - **CLI mode** prints readable summaries or JSON.
@@ -89,7 +89,7 @@ flowchart TD
     end
 
     subgraph LLM["LLM Client"]
-        API_Call["OpenRouter / DeepSeek / Grok API"]
+        API_Call["LLM API Endpoint"]
         Provider["Provider Abstraction Layer"]
     end
 
@@ -290,7 +290,8 @@ ai-log-triage --all --priority-filter HIGH
 
 **Use a different model:**
 ```bash
-ai-log-triage --input data/java_exception.log --model x-ai/grok-4.1-fast
+# Specify model identifier from your LLM provider
+ai-log-triage --input data/java_exception.log --model your-preferred-model
 ```
 
 **Line-by-line processing:**
