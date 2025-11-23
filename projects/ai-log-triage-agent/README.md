@@ -1,4 +1,4 @@
-![Log triage](/img/LogTriageBanner.png)
+![Log triage](https://github.com/R00TKI11/ai-learning-portfolio/blob/main/projects/ai-log-triage-agent/img/LogTriageBanner.png)
 
 # AI Log Triage Agent
 
