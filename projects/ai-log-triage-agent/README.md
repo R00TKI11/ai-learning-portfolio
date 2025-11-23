@@ -1,3 +1,5 @@
+![Log triage](/img/LogTriageBanner.png)
+
 # AI Log Triage Agent
 
 AI-powered developer-centric log triage engine -> ***not a log parser***.
