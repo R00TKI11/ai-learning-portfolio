@@ -1,6 +1,6 @@
 # Test Suite Documentation
 
-Comprehensive test suite for the AI Log Triage Agent with 120+ tests covering unit, integration, and edge cases.
+Comprehensive test suite for the AI Log Triage Agent with 100+ tests covering unit, integration, and edge cases.
 
 ---
 
@@ -80,7 +80,7 @@ def test_parser_input_argument(self):
 
 ---
 
-### Integration Tests (25+ tests) - NEW!
+### Integration Tests (25+ tests)
 
 #### `test_integration.py` - Full Stack Integration
 **Purpose:** Test complete workflows from input to output
@@ -111,7 +111,7 @@ def test_full_cli_workflow_with_output(self, mock_llm):
 
 ---
 
-### Validation Tests (40+ tests) - NEW!
+### Edge Case Tests (40+ tests)
 
 #### `test_edge_cases.py` - Edge Case & Error Handling
 **Purpose:** Test unusual and edge case inputs
@@ -374,12 +374,12 @@ jobs:
 3. **Refactoring** → Ensure existing tests pass
 4. **API changes** → Update integration tests
 
-### Deprecation Process
+### Test Organization
 
-1. Mark test as deprecated with comment
-2. Add new test for replacement functionality
-3. Keep old test for 1 minor version
-4. Remove with major version bump
+- Group related tests in test classes
+- Use descriptive test names
+- Keep tests focused on single functionality
+- Document complex test scenarios
 
 ---
 

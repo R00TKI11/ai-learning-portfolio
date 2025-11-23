@@ -93,7 +93,9 @@ That’s where LLMs shine and where existing open-source tools fall short.
   - Root cause analysis
   - Actionable items for resolution
 - **Flexible CLI**: Easy-to-use command-line interface with multiple output formats
-- **Multiple Output Formats**: Text, JSON, and summary reports
+- **Multiple Output Formats**: Text, JSON, YAML, Markdown, and summary reports
+- **Structured Output**: Machine-readable output with rich metadata for dashboards, automation, and analytics
+- **REST API**: FastAPI-based service for integration with existing workflows
 
 ---
 
@@ -120,8 +122,9 @@ The AI Log Triage Agent follows a modular, production-ready architecture designe
    - Future-proof abstraction allows plugging in different LLM providers or local models without changing business logic.
 
 5. **Output Layer**
-   - **CLI mode** prints readable summaries or JSON.
-   - **API mode** returns structured responses for integration with dashboards, monitoring systems, or external services.
+   - **CLI mode** supports multiple formats: text, JSON, structured JSON, YAML, Markdown
+   - **API mode** returns structured responses with rich metadata for integration with dashboards, monitoring systems, or external services
+   - **Structured output** includes summary statistics, priority/classification breakdowns, performance metrics, and actionable item tracking
 
 ### High-Level Diagram
 
@@ -278,27 +281,29 @@ curl -X POST http://localhost:8000/triage/batch \
   }'
 ```
 
-**Response Example:**
-```json
-{
-  "source_file": "webserver.log",
-  "line_number": 1,
-  "timestamp": "2025-02-17 14:23:11",
-  "log_level": "ERROR",
-  "summary": "Database connection timeout occurred",
-  "classification": "Database Error",
-  "priority": "HIGH",
-  "suggested_owner": "Database Team",
-  "root_cause": "Connection pool exhausted",
-  "action_items": [
-    "Review connection pool configuration",
-    "Check for connection leaks"
-  ],
-  "original_log": "2025-02-17 14:23:11 ERROR: Database connection timeout"
-}
+**Batch Log Triage (Structured)** - `POST /triage/batch/structured`
+
+For dashboards, automation, and analytics - includes rich metadata:
+
+```bash
+curl -X POST http://localhost:8000/triage/batch/structured \
+  -H "Content-Type: application/json" \
+  -d '{
+    "logs": [
+      "2025-02-17 14:23:11 ERROR: Database timeout",
+      "2025-02-17 14:24:15 WARN: High memory usage"
+    ],
+    "source_file": "app.log"
+  }'
 ```
 
-See [API_EXAMPLES.md](API_EXAMPLES.md) for more detailed examples and integration patterns.
+**Response includes:**
+- Summary metadata (counts, duration, performance metrics)
+- Priority, classification, and owner breakdowns
+- Actionable item tracking
+- Individual triage results
+
+See [API_EXAMPLES.md](API_EXAMPLES.md) and [STRUCTURED_OUTPUT.md](STRUCTURED_OUTPUT.md) for detailed examples and integration patterns.
 
 ---
 
@@ -341,7 +346,17 @@ python main.py --all --dry-run
 
 **Save results to a file:**
 ```bash
+# Simple JSON output
 ai-log-triage --input data/auth_failures.log --output results.json --format json
+
+# Structured JSON with metadata (recommended for automation)
+ai-log-triage --input data/auth_failures.log --output results.json --format structured-json
+
+# YAML format
+ai-log-triage --input data/auth_failures.log --output results.yaml --format yaml
+
+# Markdown report
+ai-log-triage --input data/auth_failures.log --output report.md --format markdown
 ```
 
 **Filter by priority:**
