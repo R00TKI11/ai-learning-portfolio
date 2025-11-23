@@ -1,0 +1,2 @@
+[console_scripts]
+ai-log-triage = ai_log_triage.cli:main

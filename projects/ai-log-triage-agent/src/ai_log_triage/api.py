@@ -7,8 +7,10 @@ SPDX-License-Identifier: MIT
 Copyright (c) 2025 R00TKI11
 """
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from enum import Enum
+from datetime import datetime
+import time
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,7 +53,8 @@ class TriageRequestSingle(BaseModel):
     )
     model: Optional[str] = Field(
         None,
-        description="LLM model to use (overrides default)"
+        description="LLM model to use (overrides default). Leave empty to use configured default.",
+        examples=[None]
     )
 
     @field_validator('log_text')
@@ -84,7 +87,8 @@ class TriageRequestBatch(BaseModel):
     )
     model: Optional[str] = Field(
         None,
-        description="LLM model to use (overrides default)"
+        description="LLM model to use (overrides default). Leave empty to use configured default.",
+        examples=[None]
     )
 
 
@@ -108,6 +112,18 @@ class BatchTriageResponse(BaseModel):
     total_events: int
     results: List[TriageResponse]
     priority_breakdown: Dict[str, int]
+
+
+class StructuredTriageResponse(BaseModel):
+    """Structured response with rich metadata for automation."""
+    summary: Dict[str, Any] = Field(
+        ...,
+        description="Summary metadata including counts, duration, and breakdowns"
+    )
+    results: List[TriageResponse] = Field(
+        ...,
+        description="Individual triage results"
+    )
 
 
 class ErrorResponse(BaseModel):
@@ -189,7 +205,7 @@ async def health_check():
     return HealthResponse(
         status="healthy",
         version=__version__,
-        llm_configured=bool(settings.LLM_OPENROUTER_API_KEY and settings.LLM_ENDPOINT)
+        llm_configured=settings.is_configured()
     )
 
 
@@ -345,6 +361,138 @@ async def triage_batch_logs(request: TriageRequestBatch):
         )
 
 
+@app.post(
+    "/triage/batch/structured",
+    response_model=StructuredTriageResponse,
+    tags=["Triage"],
+    summary="Triage multiple log entries with rich metadata",
+    status_code=status.HTTP_200_OK
+)
+async def triage_batch_structured(request: TriageRequestBatch):
+    """
+    Analyze and triage multiple log entries with rich structured output.
+
+    This endpoint is designed for automation, dashboards, and analytics. It provides:
+    - Complete summary metadata (duration, counts, performance metrics)
+    - Priority, classification, and owner breakdowns
+    - Actionable item counts
+    - Individual triage results
+
+    **Use cases:**
+    - Dashboard integration
+    - GitHub/Jira automation
+    - Performance tracking
+    - Analytics and reporting
+
+    **Example Request:**
+    ```json
+    {
+      "logs": [
+        "2025-02-17 14:23:11 ERROR: Database timeout",
+        "2025-02-17 14:24:15 WARN: High memory usage"
+      ],
+      "source_file": "app.log"
+    }
+    ```
+
+    **Example Response:**
+    ```json
+    {
+      "summary": {
+        "total_events_analyzed": 2,
+        "total_results": 2,
+        "duration_seconds": 1.23,
+        "events_per_second": 1.63,
+        "priority_breakdown": {
+          "CRITICAL": 0,
+          "HIGH": 1,
+          "MEDIUM": 1,
+          "LOW": 0,
+          "INFO": 0
+        },
+        "actionable_count": 1
+      },
+      "results": [...]
+    }
+    ```
+    """
+    try:
+        # Create LogEvents from raw log texts
+        events = []
+        for i, log_text in enumerate(request.logs, start=1):
+            if not log_text.strip():
+                continue
+
+            event = LogEvent(
+                raw_content=log_text.strip(),
+                line_number=i,
+                timestamp=log_parser.extract_timestamp(log_text),
+                log_level=log_parser.extract_log_level(log_text),
+                source_file=request.source_file or f"batch_request_{i}.log",
+                category=log_parser.detect_category(request.source_file) if request.source_file else "general"
+            )
+            events.append(event)
+
+        if not events:
+            raise ValueError("No valid log events found in the batch")
+
+        # Triage all events with timing
+        start_time = time.time()
+        agent = TriageAgent(model=request.model)
+        results = agent.triage_batch(events, max_tokens=request.max_tokens)
+        duration = time.time() - start_time
+
+        # Generate structured metadata
+        priority_counts = {p.value: 0 for p in Priority}
+        classification_counts = {}
+        owner_counts = {}
+
+        for result in results:
+            priority_counts[result.priority.value] += 1
+            classification = result.classification
+            classification_counts[classification] = classification_counts.get(classification, 0) + 1
+            owner = result.suggested_owner
+            owner_counts[owner] = owner_counts.get(owner, 0) + 1
+
+        summary = {
+            'total_events_analyzed': len(events),
+            'total_results': len(results),
+            'duration_seconds': round(duration, 3),
+            'timestamp': datetime.now().isoformat(),
+            'events_per_second': round(len(events) / duration, 2) if duration > 0 else 0,
+            'priority_breakdown': priority_counts,
+            'classification_breakdown': classification_counts,
+            'owner_breakdown': owner_counts,
+            'critical_count': priority_counts['CRITICAL'],
+            'high_count': priority_counts['HIGH'],
+            'actionable_count': priority_counts['CRITICAL'] + priority_counts['HIGH']
+        }
+
+        # Convert to response models
+        response_results = [TriageResponse(**r.to_dict()) for r in results]
+
+        return StructuredTriageResponse(
+            summary=summary,
+            results=response_results
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"LLM processing error: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error: {str(e)}"
+        )
+
+
 @app.get(
     "/",
     tags=["System"],
@@ -364,7 +512,8 @@ async def root():
         "health": "/health",
         "endpoints": {
             "triage_single": "POST /triage",
-            "triage_batch": "POST /triage/batch"
+            "triage_batch": "POST /triage/batch",
+            "triage_batch_structured": "POST /triage/batch/structured (for dashboards/automation)"
         }
     }
 

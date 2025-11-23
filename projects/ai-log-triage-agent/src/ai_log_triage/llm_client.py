@@ -1,6 +1,6 @@
 """
 LLM Client Module
-Handles communication with the OpenRouter API.
+Handles communication with LLM APIs (OpenRouter, OpenAI, etc.).
 
 SPDX-License-Identifier: MIT
 Copyright (c) 2025 R00TKI11
@@ -9,46 +9,46 @@ Copyright (c) 2025 R00TKI11
 import requests
 from .config import settings
 
-API_KEY = settings.LLM_OPENROUTER_API_KEY
-ENDPOINT = settings.LLM_ENDPOINT
-DEFAULT_MODEL = settings.LLM_DEFAULT_MODEL
 
-def call_llm(prompt: str, max_tokens: int = 1024, model: str = None) -> str:
+def call_llm(
+    prompt: str,
+    max_tokens: int = None,
+    model: str = None,
+    timeout: int = None
+) -> str:
     """
     Call the LLM API with a prompt.
 
     Args:
         prompt: The prompt to send to the LLM
-        max_tokens: Maximum tokens in the response
-        model: Model to use (defaults to MODEL from env)
+        max_tokens: Maximum tokens in the response (default: from settings)
+        model: Model to use (default: from settings)
+        timeout: Request timeout in seconds (default: from settings)
 
     Returns:
         The LLM response text
 
     Raises:
-        RuntimeError: If required environment variables are not set
+        RuntimeError: If required settings are not configured or API call fails
     """
-    if not API_KEY or not ENDPOINT:
-        raise RuntimeError(
-            "LLM_OPENROUTER_API_KEY or LLM_ENDPOINT is not set. "
-            "Check your .env file or environment variables."
-        )
+    # Validate configuration
+    is_valid, errors = settings.validate()
+    if not is_valid:
+        error_msg = "LLM client not properly configured:\n  - " + "\n  - ".join(errors)
+        error_msg += "\n\nCheck your .env file (see .env.example for template)"
+        raise RuntimeError(error_msg)
+
+    # Use provided values or defaults from settings
+    selected_model = model or settings.LLM_DEFAULT_MODEL
+    selected_max_tokens = max_tokens or settings.LLM_MAX_TOKENS
+    selected_timeout = timeout or settings.LLM_TIMEOUT
 
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {settings.LLM_API_KEY}",
         "Content-Type": "application/json"
     }
 
-    # Use provided model or default from settings
-    selected_model = model or DEFAULT_MODEL
-
-    if not selected_model:
-        raise RuntimeError(
-            "No LLM model specified and LLM_DEFAULT_MODEL is not set in .env. "
-            "Either pass a model parameter or set a default model in your .env file."
-        )
-
-    # OpenRouter uses chat completions format
+    # Chat completions format (OpenRouter, OpenAI compatible)
     body = {
         "model": selected_model,
         "messages": [
@@ -57,15 +57,23 @@ def call_llm(prompt: str, max_tokens: int = 1024, model: str = None) -> str:
                 "content": prompt
             }
         ],
-        "max_tokens": max_tokens
+        "max_tokens": selected_max_tokens
     }
 
     try:
-        resp = requests.post(ENDPOINT, headers=headers, json=body, timeout=120) #set timeout to 120 but might want to add this as a CLI argument in the future
+        resp = requests.post(
+            settings.LLM_ENDPOINT,
+            headers=headers,
+            json=body,
+            timeout=selected_timeout
+        )
         resp.raise_for_status()
         data = resp.json()
     except requests.Timeout as e:
-        raise RuntimeError(f"LLM call timed out: {e}") from e
+        raise RuntimeError(
+            f"LLM call timed out after {selected_timeout}s. "
+            f"Consider increasing LLM_TIMEOUT in .env"
+        ) from e
     except requests.RequestException as e:
         raise RuntimeError(f"LLM HTTP error: {e} - response: {getattr(e, 'response', None)}") from e
     except ValueError as e:
