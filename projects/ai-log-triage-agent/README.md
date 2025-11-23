@@ -1,15 +1,28 @@
 # AI Log Triage Agent
 
-An intelligent log analysis tool that uses LLMs to automatically triage and categorize log events, providing actionable insights for DevOps teams.
+AI-powered developer-centric log triage engine -> ***not a log parser***.
 
-## Overview
+## Description
 
-This project explores how **LLM-based agents** can assist developers and operations teams by:
+AI Log Triage Agent is an LLM-driven triage engine designed for DevOps, SRE, and engineering teams who need actionable insights from logs.
 
-- Ingesting application logs and issue descriptions
-- Clustering related issues by probable root cause
-- Generating human-readable summaries
-- Suggesting priority and potential owning teams
+Unlike traditional log tools that focus on parsing, ingestion, or visualization, this project focuses on:
+
+- Understanding logs
+
+- Summarizing what matters
+
+- Clustering related events
+
+- Suggesting next steps
+
+- Identifying likely owners
+
+- Prioritizing incidents
+
+- Integrating into actual engineering workflows (CLI, API, automation)
+
+This project is model agnostic, supports local or hosted LLMs, and is architected to evolve alongside the rapidly changing AI ecosystem.
 
 The goal is to build both:
 
@@ -17,6 +30,52 @@ The goal is to build both:
 - A **FastAPI service** for integration and further research
 
 This project will also serve as a foundation for potential **research work** on LLM-based triage and developer productivity.
+
+---
+
+## Overview
+
+Modern teams already have great log ingestion tools (ELK, Loki, Datadog, Splunk), but they all suffer the same pain point:
+
+Too many logs → too little actionable insight → slow triage → slow recovery.
+
+AI Log Triage Agent solves this by adding a smart triage layer on top of any log source.
+
+
+### What the tool does:
+- Takes raw logs (files, batches, or API input)
+
+- Parses them lightly (only enough to structure context)
+
+- Uses LLM reasoning to produce:
+  - Human-readable summaries
+
+  - Root-cause hypotheses
+
+  - Suggested fixes
+
+  - Recommended owning team/service
+
+  - Severity score
+
+  - Clustered related events
+
+
+### What the tool intentionally does NOT do:
+
+- Compete with log ingestion platforms
+
+- Replace ELK / Loki / Datadog, etc.
+
+- Build complex dashboards
+
+- Replace anomaly detection systems
+
+
+### Why this matters:
+
+This project focuses on the triage layer — the missing middle piece between raw logs and human decisions.
+That’s where LLMs shine and where existing open-source tools fall short.
 
 ---
 
@@ -495,130 +554,132 @@ If you encounter HTTP errors from the API:
 
 ## Next Steps
 
-## 🔭 Roadmap
+## 🔭 Roadmap 
 
-This roadmap is intentionally high-level so it stays valid as the project evolves. Versions are approximate and represent milestone “themes” rather than strict releases.
-
-### ✅ Current Status – v0.1.x
-
-- CLI tool for running log triage on local log files
-- FastAPI service exposing core triage functionality via HTTP
-- LLM integration via configurable provider (e.g., OpenRouter + free models)
-- Basic test suite (CLI, API, core parsing / triage logic)
-- Sample synthetic logs for common scenarios (auth, DB, web server, deployments, security)
+This roadmap is intentionally high-level and strategic in nature; it's not intended to provide a release schedule. 
 
 ---
 
-### 🧱 v0.2 – Stability, UX, and Core Polish
+## ✅ MVP – v0.1.x (Done)
 
-**Goal:** Make the tool feel reliable and pleasant to use for developers.
-
-- [ ] Harden error handling and edge cases (bad/missing logs, model timeouts, malformed responses)
-- [ ] Improve logging & observability for the triage pipeline (structured logs, correlation IDs, timing)
-- [ ] Refine configuration:
-  - [ ] Centralize settings (env + config file) with clear precedence
-  - [X] Provide a `.env.example` and config docs
-- [ ] Enhance CLI UX:
-  - [ ] Support globs and directories for input logs
-  - [ ] Add options for output format (plain text, JSON, markdown)
-  - [ ] Add filters (by severity, component, time range)
-- [ ] Improve API ergonomics:
-  - [ ] Strong request/response models (pydantic schemas)
-  - [ ] Proper status codes & error payloads
-  - [ ] CORS configuration for future UI
+- CLI tool for running LLM-powered triage on local log files
+- FastAPI service exposing triage functionality via HTTP
+- Model-agnostic integration via a configurable LLM provider layer (OpenRouter, free models, paid models later)
+- Basic test suite (CLI, API, parsing, triage logic)
+- Sample synthetic logs for multiple scenarios (auth, DB, deployments, security)
 
 ---
 
-### 🧠 v0.3 – Smarter Log Understanding & Triage Quality
+## 🧱 v0.2 – Stability, UX, and Core Polish
 
-**Goal:** Increase the “intelligence” and usefulness of the triage output.
+Goal: Increase developer confidence and make triage predictable.
 
-- [ ] Expand built-in log parsers (web, DB, auth, security, infra, app exceptions)
-- [ ] Add a reusable library of patterns (regex/signatures) for common error types
-- [ ] Introduce a consistent severity scoring model (e.g., INFO → CRITICAL)
-- [ ] Add “probable root cause” and “recommended next action” fields
-- [ ] Allow mapping from log patterns → suggested owning team / service
-- [ ] Support multi-log correlation for a single incident (e.g., auth + app + DB sequence)
-
----
-
-### 🗃️ v0.4 – Persistence & Integrations
-
-**Goal:** Move from “single run” tool to something that can support ongoing operations.
-
-- [ ] Add optional persistence layer:
-  - [ ] Start with SQLite, then allow Postgres
-  - [ ] Store triage runs, summaries, and metadata
-- [ ] Support log ingestion sources:
-  - [ ] Local directory watcher
-  - [ ] Compressed archives (e.g., `.zip`, `.tar.gz`)
-  - [ ] (Stretch) Simple S3 / object storage integration
-- [ ] Basic integrations (MVP):
-  - [ ] Export triage results to JSON for GitHub Actions / CI pipelines
-  - [ ] (Stretch) Simple GitHub or Jira issue export (e.g., create tickets from high-severity findings)
+- Improve error handling (missing logs, model failures, network issues)
+- Add structured observability for the triage pipeline (timings, error surfaces)
+- Consolidate configuration (env + config file)
+- Add richer CLI UX:
+  - Support directories and glob patterns
+  - Output modes (plain text, JSON, markdown)
+  - Filters (severity, component, date range)
+- Strengthen FastAPI layer:
+  - Request/response schemas (Pydantic)
+  - Better error payloads
+  - CORS and API polish
 
 ---
 
-### 🧩 v0.5 – Model Abstraction & Multi-Provider Support
+## 🧠 v0.3 – Smarter Triage & Actionability
 
-**Goal:** Treat models as pluggable infrastructure, not hard-coded dependencies.
+Goal: Enhance intelligence; focus on triage, not log parsing.
 
-- [ ] Create a clean LLM abstraction layer (interface/protocol)
-- [ ] Support multiple providers via configuration:
-  - [ ] OpenRouter / other aggregators
-  - [ ] OpenAI / Anthropic (paid, opt-in)
-  - [ ] Local models (e.g., Ollama / other HTTP-compatible local backends)
-- [ ] Configurable model “profiles”:
-  - [ ] “Cheap & fast” (small models)
-  - [ ] “Standard” (balanced)
-  - [ ] “High-accuracy” (larger models)
-- [ ] Add basic cost / token-usage logging (per call, per run)
+- Expand built-in pattern recognizers for common failure types
+- Add a unified severity score model
+- Add "probable root cause" explanations
+- Add "recommended next action" guidance
+- Add optional ownership suggestions:
+  - Patterns → teams, services, components
+- Support correlating multiple logs into one incident
 
 ---
 
-### 📊 v0.6 – Evaluation, Benchmarks & Research Track
+## 🗃️ v0.4 – Persistence, History, and Integrations
 
-**Goal:** Turn the project into something you can write about (blog posts, talks, and eventually a paper).
+Goal: Move from a one-off tool to something usable in real operational workflows.
 
-- [ ] Define a small benchmark dataset of logs + “ideal” triage outputs
-- [ ] Build an offline evaluation harness:
-  - [ ] Compare different prompts, models, and configurations
-  - [ ] Track metrics like accuracy of severity, correctness of root-cause categorization, clustering quality
-- [ ] Add automated regression tests for model behavior (where feasible)
-- [ ] Document experimental setups in a reproducible way (configs + seeds + model versions)
-- [ ] Draft a short “Technical Report” or blog-style writeup summarizing findings
-
----
-
-### 📊 v0.7 – Developer Dashboard & Basic UI
-
-**Goal:** Make it easy for non-CLI users (SREs, leads, managers) to consume triage results.
-
-- [ ] Build a minimal web UI on top of FastAPI:
-  - [ ] Upload or select logs and run triage from the browser
-  - [ ] Visualize grouped incidents, severities, and timelines
-- [ ] Add run history view (filterable by date / severity / component)
-- [ ] Provide copy-pasteable summaries for incident reports or tickets
-- [ ] (Stretch) Simple authentication / API key support for shared environments
+- Add optional persistence:
+  - Start with SQLite; support Postgres later
+- Store:
+  - Triage runs
+  - Summaries
+  - Metadata
+- Add ingestion helpers:
+  - Directory watcher
+  - Compressed archives (zip, tar.gz)
+  - (Optional) Simple S3/object storage fetcher
+- Integrations (initial):
+  - Export triage results for CI/CD (JSON)
+  - (Optional) Create GitHub/Jira issues for high-severity findings
 
 ---
 
-### 🚀 Stretch Ideas & Future Directions
+## 🧩 v0.5 – Model Abstraction & Multi-Provider Support
 
-These are longer-term, “nice to have” directions:
+Goal: Make the LLM layer future-proof and interchangeable.
 
-- [ ] RAG over historical logs & runbooks (LLM answers with citations)
-- [ ] Multi-tenant deployment mode (teams, organizations)
-- [ ] Docker + docker-compose and/or Helm chart for easy deployment
-- [ ] GitHub Actions CI:
-  - [ ] Run tests on push/PR
-  - [ ] Linting + type-checking
-- [ ] Performance profiling and optimization for high-volume log streams
-- [ ] More formal incident timeline reconstruction and export (for postmortems)
+- Create a clean LLM abstraction layer
+- Support multiple backends:
+  - OpenRouter + free models
+  - OpenAI, Anthropic (paid)
+  - Local models (Ollama, LM Studio, etc.)
+- Add "profiles":
+  - Cheap/Fast
+  - Standard
+  - High-Accuracy
+- Add token and cost reporting
 
 ---
 
-This roadmap is intentionally ambitious and not meant to be tackled strictly linear.  
+## 📊 v0.6 – Evaluation, Benchmarks, and Research Track
+
+Goal: Make this project academically valuable and research-ready.
+
+- Create a benchmark dataset of logs and ideal triage outputs
+- Build an experimental harness:
+  - Compare prompts, models, and scoring
+  - Measure severity accuracy, clustering quality, and root-cause consistency
+- Add regression tests for model outputs
+- Make experiments reproducible (configs + seeds + model versions)
+- Draft a technical report summarising findings
+
+---
+
+## 🖥️ v0.7 – Developer Dashboard & Lightweight UI
+
+Goal: Provide an optional visualisation without turning into a dashboard product.
+
+- Build a simple web UI on top of FastAPI:
+  - Select logs
+  - Run triage
+  - View grouped incidents and severities
+- Add run history
+- Add copy-pasteable summaries for incident reports
+- (Optional) Add lightweight auth for shared deployments
+
+---
+
+## 🚀 Future Directions (Long-Term Vision)
+
+These items expand the tool into an AI-first triage assistant.
+
+- RAG over historical logs and runbooks
+- Multi-tenant deployments
+- Docker/Compose/Helm packaging
+- GitHub Actions CI (tests, linting, type-checking)
+- Performance optimisation for large log volumes
+- Complex incident timeline reconstruction
+
+---
+
 
 ---
 
