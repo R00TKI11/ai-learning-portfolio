@@ -1,0 +1,16 @@
+# Experimental Profile - For testing new models
+# Easy configuration for trying different models
+
+name: experimental
+description: Testing new or experimental models
+
+llm:
+  # Uncomment and change this to test different models
+  # model: your-experimental-model-here  # e.g., x-ai/grok-beta
+  max_tokens: 1024
+  timeout: 90
+  temperature: 0.6
+
+# Balanced settings for experimentation
+truncate_logs: true
+max_log_length: 5000

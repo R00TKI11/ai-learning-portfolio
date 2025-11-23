@@ -1,0 +1,16 @@
+# Fast Profile - For quick, cost-effective triage
+# Uses faster, cheaper models with lower token limits
+
+name: fast
+description: Quick and cost-effective analysis using fast models
+
+llm:
+  # Uncomment to override the model from environment settings
+  # model: your-fast-model-here  # e.g., anthropic/claude-3-haiku-20240307
+  max_tokens: 512
+  timeout: 30
+  temperature: 0.3
+
+# Optimization settings
+truncate_logs: true
+max_log_length: 2000

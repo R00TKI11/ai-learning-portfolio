@@ -91,6 +91,99 @@ LLM_TIMEOUT=300  # Local models might be slower
 
 ---
 
+## Configuration Profiles
+
+Configuration profiles provide pre-configured settings for different use cases. Profiles are stored in the `profiles/` directory as YAML files.
+
+### Using Profiles
+
+**CLI:**
+```bash
+# Use fast profile (Claude 3 Haiku, 512 tokens, 30s timeout)
+ai-log-triage --input data/app.log --profile fast
+
+# Use accurate profile (Claude 3.5 Sonnet, 2048 tokens, 120s timeout)
+ai-log-triage --input data/error.log --profile accurate
+
+# Use local LLM profile
+ai-log-triage --input data/auth.log --profile local
+
+# Use experimental profile
+ai-log-triage --input data/test.log --profile experimental
+
+# Override model from profile
+ai-log-triage --input data/app.log --profile fast --model gpt-4
+```
+
+**Python API:**
+```python
+from ai_log_triage.config import settings
+
+# Load a profile
+settings.load_profile('accurate')
+
+# Profile settings are now active
+from ai_log_triage.triage_agent import TriageAgent
+agent = TriageAgent()  # Uses settings from profile
+```
+
+### Available Profiles
+
+| Profile | Use Case | Model | Max Tokens | Timeout |
+|---------|----------|-------|------------|---------|
+| `fast` | Quick analysis, batch processing, development | From environment | 512 | 30s |
+| `accurate` | Production incidents, complex analysis | From environment | 2048 | 120s |
+| `local` | Privacy-sensitive, offline operation | From environment | 1024 | 180s |
+| `experimental` | Testing new models | From environment | 1024 | 90s |
+
+**Note:** All profiles use your configured model from environment settings by default. You can uncomment the `model` line in any profile file to override it for that specific profile.
+
+### Creating Custom Profiles
+
+Create a new YAML file in `profiles/`:
+
+```yaml
+# profiles/my-custom.yaml
+name: my-custom
+description: My custom configuration
+
+llm:
+  model: your-model-identifier
+  max_tokens: 1024
+  timeout: 60
+  temperature: 0.5
+
+  # Optional: Override endpoint
+  endpoint: https://custom-api.example.com/v1/chat
+
+  # Optional: Override API key
+  api_key: your-api-key-here
+
+# Application settings
+truncate_logs: true
+max_log_length: 5000
+```
+
+### Configuration Priority
+
+Configuration is loaded in this order (later overrides earlier):
+1. Environment variables (`.env` file)
+2. Profile configuration (`--profile` flag)
+3. CLI arguments (`--model` flag)
+
+Example:
+```bash
+# .env has: LLM_DEFAULT_MODEL=claude-3-haiku
+# fast profile has: model: claude-3-haiku-20240307
+# CLI has: --model claude-3-opus-20240229
+
+# Result: Uses claude-3-opus-20240229 (CLI wins)
+```
+
+For detailed profile documentation, see [profiles/README.md](profiles/README.md).
+
+---
+
 ## Configuration in Code
 
 ### Accessing Settings
@@ -306,6 +399,7 @@ The old `LLM_OPENROUTER_API_KEY` will still work but shows a deprecation warning
 
 ## See Also
 
+- [profiles/README.md](profiles/README.md) - Configuration profiles guide
 - [.env.example](.env.example) - Configuration template
 - [README.md](README.md) - Main documentation
 - [API_EXAMPLES.md](API_EXAMPLES.md) - API usage examples

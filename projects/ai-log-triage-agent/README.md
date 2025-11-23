@@ -232,6 +232,34 @@ LLM_ENDPOINT=https://openrouter.ai/api/v1/chat/completions
 LLM_DEFAULT_MODEL=your-default-model-here
 ```
 
+### Configuration Profiles
+
+Configuration profiles allow you to quickly switch between different LLM configurations for different use cases without modifying environment variables or code. Profiles override specific settings (like max tokens and timeout) while using your configured model from environment settings by default.
+
+**Available profiles:**
+- `fast` - Quick, cost-effective analysis with lower token limits (512 tokens, 30s timeout)
+- `accurate` - High-quality analysis with higher token limits (2048 tokens, 120s timeout)
+- `local` - Optimized for self-hosted/local LLM instances (1024 tokens, 180s timeout)
+- `experimental` - Balanced settings for testing new models (1024 tokens, 90s timeout)
+
+**Using profiles:**
+```bash
+# Use fast profile for quick analysis
+ai-log-triage --input data/app.log --profile fast
+
+# Use accurate profile for production incidents
+ai-log-triage --input data/error.log --profile accurate
+
+# Use local LLM (requires Ollama or similar running)
+ai-log-triage --input data/auth.log --profile local
+
+# Override profile model
+ai-log-triage --input data/app.log --profile fast --model your-preferred-model
+```
+
+**Creating custom profiles:**
+Create a new YAML file in the `profiles/` directory. See [profiles/README.md](profiles/README.md) for detailed documentation.
+
 ---
 
 ## Usage
@@ -401,8 +429,9 @@ ai-log-triage --all --max-events 5
 |----------|-------|-------------|
 | `--input PATH` | `-i` | Path to a specific log file or directory |
 | `--all` | `-a` | Process all log files in the default data directory |
+| `--profile PROFILE` | | Configuration profile to use (fast, accurate, local, experimental) |
 | `--chunk-method METHOD` | `-c` | Chunking method: `event` or `line` (default: event) |
-| `--model MODEL` | `-m` | LLM model to use (overrides default) |
+| `--model MODEL` | `-m` | LLM model to use (overrides default and profile) |
 | `--max-events N` | | Maximum number of events to process |
 | `--dry-run` | | Parse logs without calling LLM (for testing) |
 | `--output FILE` | `-o` | Output file path (default: print to console) |
@@ -441,6 +470,12 @@ ai-log-triage-agent/
 │       ├── triage_agent.py         # LLM-based triage logic
 │       ├── llm_client.py           # OpenRouter API client
 │       └── config.py               # Configuration settings
+├── profiles/                        # Configuration profiles
+│   ├── README.md                   # Profile documentation
+│   ├── fast.yaml                   # Fast/cheap model profile
+│   ├── accurate.yaml               # High-quality model profile
+│   ├── local.yaml                  # Local LLM profile
+│   └── experimental.yaml           # Experimental model profile
 ├── data/                            # Sample log files
 │   ├── webserver_error.log
 │   ├── auth_failures.log

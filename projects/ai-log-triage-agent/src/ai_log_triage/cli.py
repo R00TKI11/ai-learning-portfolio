@@ -63,6 +63,12 @@ Examples:
 
     # Processing options
     parser.add_argument(
+        '--profile',
+        type=str,
+        help='Configuration profile to use (fast, accurate, local, experimental)'
+    )
+
+    parser.add_argument(
         '--chunk-method', '-c',
         type=str,
         choices=['event', 'line'],
@@ -73,7 +79,7 @@ Examples:
     parser.add_argument(
         '--model', '-m',
         type=str,
-        help='LLM model to use (overrides default from config)'
+        help='LLM model to use (overrides default from config and profile)'
     )
 
     parser.add_argument(
@@ -465,6 +471,17 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        # Load configuration profile if specified
+        if args.profile:
+            from .config import settings
+            try:
+                settings.load_profile(args.profile)
+                if args.verbose:
+                    print(f"Loaded profile: {args.profile}")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"Error loading profile '{args.profile}': {e}", file=sys.stderr)
+                return 1
+
         # Initialize parser and agent
         if args.verbose:
             print("Initializing Log Parser and Triage Agent...")

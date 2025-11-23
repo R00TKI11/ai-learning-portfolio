@@ -1,0 +1,16 @@
+# Accurate Profile - For detailed, high-quality analysis
+# Uses more capable models with higher token limits
+
+name: accurate
+description: Detailed analysis using high-capability models
+
+llm:
+  # Uncomment to override the model from environment settings
+  # model: your-accurate-model-here  # e.g., anthropic/claude-3-5-sonnet-20241022
+  max_tokens: 2048
+  timeout: 120
+  temperature: 0.5
+
+# Analysis settings
+truncate_logs: false
+max_log_length: 10000

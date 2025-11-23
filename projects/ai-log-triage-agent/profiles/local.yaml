@@ -1,0 +1,21 @@
+# Local Profile - For local LLM instances
+# Configured for self-hosted or local models (Ollama, LM Studio, etc.)
+
+name: local
+description: Local LLM instance (Ollama, LM Studio, etc.)
+
+llm:
+  # Uncomment and configure for your local setup
+  # model: llama3.1:8b
+  max_tokens: 1024
+  timeout: 180
+  temperature: 0.4
+
+  # Override endpoint for local server (uncomment if using local LLM)
+  # endpoint: http://localhost:11434/api/chat
+  # Local models typically don't need API keys
+  # api_key: ""
+
+# Settings optimized for local models
+truncate_logs: true
+max_log_length: 4000
